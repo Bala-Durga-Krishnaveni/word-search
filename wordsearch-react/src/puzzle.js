@@ -193,3 +193,19 @@ export function generatePuzzle(unit, layout = LAYOUT) {
   if (!result) result = generateStraight(unit);
   return result;
 }
+/* ---------- checking a player's selection ---------- */
+
+/* A selection only counts when the player traced the exact cells of a keyword
+   (forwards or backwards). Spelling the same letters somewhere else does not count,
+   so the game never reveals a word the player has not really found. */
+export function matchSelection(puzzle, cells, found) {
+  if (cells.length < 2) return null;
+  const key = (c) => c.r + "," + c.c;
+  const sel = cells.map(key).join("|");
+  const rev = cells.slice().reverse().map(key).join("|");
+  return puzzle.placed.find((pw) => {
+    if (found.includes(pw.word)) return false;
+    const path = pw.cells.map(key).join("|");
+    return path === sel || path === rev;
+  }) || null;
+}
