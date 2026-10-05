@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { showStartLetters } from "../api.js";
 import { SPARE_TILE } from "../puzzle.js";
 
 const sameCell = (a, b) => a.r === b.r && a.c === b.c;
@@ -9,6 +10,9 @@ export default function Grid({ puzzle, found, hintCell, locked, onSelect }) {
   const boxRef = useRef(null);
   const [cell, setCell] = useState(36);
   const [sel, setSel] = useState([]);
+  const [wrong, setWrong] = useState([]);          // a wrong try, shown in red for a moment
+  const wrongTimer = useRef(null);
+  useEffect(() => () => clearTimeout(wrongTimer.current), []);
   const selRef = useRef([]);
   const dragging = useRef(false);
 
@@ -36,7 +40,9 @@ export default function Grid({ puzzle, found, hintCell, locked, onSelect }) {
   const pointsFor = (cells) => cells.map((c) => { const p = center(c); return p.x + "," + p.y; }).join(" ");
 
   const startColor = {};
-  placed.forEach((pw) => { startColor[pw.cells[0].r + "," + pw.cells[0].c] = pw.color; });
+  if (showStartLetters()) {
+    placed.forEach((pw) => { startColor[pw.cells[0].r + "," + pw.cells[0].c] = pw.color; });
+  }
   const foundCells = new Set();
   placed.forEach((pw) => { if (found.includes(pw.word)) pw.cells.forEach((c) => foundCells.add(c.r + "," + c.c)); });
 
@@ -76,10 +82,15 @@ export default function Grid({ puzzle, found, hintCell, locked, onSelect }) {
     dragging.current = false;
     const cells = selRef.current;
     updateSel([]);
-    onSelect(cells);
+    if (onSelect(cells) === false) {
+      setWrong(cells);
+      clearTimeout(wrongTimer.current);
+      wrongTimer.current = setTimeout(() => setWrong([]), 600);
+    }
   }
 
   const selKeys = new Set(sel.map((c) => c.r + "," + c.c));
+  const wrongKeys = new Set(wrong.map((c) => c.r + "," + c.c));
   const cellsOut = [];
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -97,12 +108,13 @@ export default function Grid({ puzzle, found, hintCell, locked, onSelect }) {
       let cls = "cell";
       if (isFound) cls += " wordFound";
       else if (selKeys.has(key)) cls += " sel";
+      else if (wrongKeys.has(key)) cls += " wrong";
       if (!isFound && startColor[key]) cls += " startHint";
       if (hintCell && hintCell.r === r && hintCell.c === c) cls += " hint";
       cellsOut.push(
         <div
           key={key} data-r={r} data-c={c} className={cls}
-          style={!isFound && !selKeys.has(key) && startColor[key] ? { background: startColor[key] } : undefined}
+          style={!isFound && !selKeys.has(key) && !wrongKeys.has(key) && startColor[key] ? { background: startColor[key] } : undefined}
         >
           {letter}
         </div>
@@ -126,6 +138,10 @@ export default function Grid({ puzzle, found, hintCell, locked, onSelect }) {
               </g>
             );
           })}
+          {wrong.length > 1 && (
+            <polyline points={pointsFor(wrong)} fill="none" stroke="#EF4444" strokeWidth={Math.round(cell * 0.62)}
+              strokeLinecap="round" strokeLinejoin="round" opacity="0.45" />
+          )}
           {sel.length > 1 && (
             <polyline points={pointsFor(sel)} fill="none" stroke="#F59E0B" strokeWidth={Math.round(cell * 0.62)}
               strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
