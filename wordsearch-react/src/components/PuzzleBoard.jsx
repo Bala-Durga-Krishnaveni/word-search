@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SCORES } from "../data.js";
-import { generatePuzzle } from "../puzzle.js";
+import { generatePuzzle, matchSelection } from "../puzzle.js";
 import { newSubmissionId, submitScore } from "../api.js";
 import { fmtTime } from "../utils.js";
 import Grid from "./Grid.jsx";
