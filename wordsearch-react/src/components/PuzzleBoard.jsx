@@ -53,17 +53,17 @@ export default function PuzzleBoard({ unit, student, onNewPuzzle, onNextUnit, on
     setShowModal(true);
   }, [found, done, total, unit.id, student, score, hints]);
 
+    // returns true (right word), false (wrong), or undefined (nothing to judge)
   function handleSelect(cells) {
-    if (done || cells.length < 2) return;
-    const str = cells.map((c) => puzzle.grid[c.r][c.c]).join("");
-    const rev = str.split("").reverse().join("");
-    const match = puzzle.placed.find((pw) => (pw.word === str || pw.word === rev) && !found.includes(pw.word));
+    if (done || cells.length < 2) return undefined;
+    const match = matchSelection(puzzle, cells, found);
     if (match) {
       setFound((f) => [...f, match.word]);
       setScore((s) => s + SCORES.correct);
-    } else {
-      setScore((s) => Math.max(0, s + SCORES.wrong));
+      return true;
     }
+    setScore((s) => Math.max(0, s + SCORES.wrong));
+    return false;
   }
 
   function giveHint() {
