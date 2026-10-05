@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Data Science with Python - Word Search Challenge</title>
+  </head>
+  <body>
+    <script>
+/* ===== SETTINGS - edit these two lines ===================================
+   scoreApiUrl   : paste your Google Apps Script web-app URL here (ends with /exec).
+                   Leave it empty to keep scores on each device only.
+   requireRollNo : true = students must type a roll number
+   ======================================================================== */
+window.WORDSEARCH_CONFIG = {
+  scoreApiUrl: "https://script.google.com/macros/s/AKfycbzl0ibbtzUCm-yrchOkzWw2l6WWxsjG7O24WFxzXiutWRkAK9nwYqNiGE3OT6fO4Fqu/exec",
+  requireRollNo: false
+};
+</script>
+    <div id="root"></div>
+    <script>
+      // This is the Vite project template. It cannot be opened by double-clicking.
+      if (location.protocol === "file:") {
+        document.getElementById("root").innerHTML =
+          '<div style="font-family:sans-serif;max-width:520px;margin:60px auto;padding:20px;border:2px solid #FCD34D;border-radius:12px;background:#FFFBEB">' +
+          '<b>This is the React project template.</b><p>To play the game right now, open <code>standalone/index.html</code> (double-click it).</p>' +
+          '<p>To work on the code: run <code>npm install</code> then <code>npm run dev</code>.</p></div>';
+      }
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
