@@ -7,6 +7,8 @@ const apiUrl = () => String(cfg().scoreApiUrl || "").trim();
 
 export const isShared = () => apiUrl() !== "";
 export const requireRollNo = () => !!cfg().requireRollNo;
+// colour the first letter of every word (on by default; set showStartLetters: false to hide)
+export const showStartLetters = () => cfg().showStartLetters !== false;
 
 async function request(url, options) {
   const ctrl = new AbortController();
